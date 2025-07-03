@@ -90,8 +90,15 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
-        <h2>Employee Dashboard</h2>
-        <button onClick={handleLogout} className="logout-btn">Logout</button>
+        <div className="title-section">
+          <h2>Employee Dashboard</h2>
+        </div>
+        <input
+          className="search"
+          placeholder="Search employees..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
       </div>
 
       <div className="filters">
@@ -126,12 +133,6 @@ const Dashboard = () => {
         <button className="add-btn" onClick={handleAddOrUpdate}>
           {editingId ? 'Update Employee' : 'Add Employee'}
         </button>
-        <input
-          className="search"
-          placeholder="Search employees..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
       </div>
 
       <table>
@@ -159,6 +160,9 @@ const Dashboard = () => {
           ))}
         </tbody>
       </table>
+      <div className="logout-bottom">
+      <button onClick={handleLogout} className="logout-btn">Logout</button>
+  </div>
     </div>
   );
 };
@@ -166,8 +170,11 @@ const Dashboard = () => {
 export default Dashboard;
 
 
-// // src/components/Dashboard.jsx
+
+
 // import React, { useState, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { useAuth } from '../context/AuthContext';
 // import api from '../services/api';
 // import '../styles/Dashboard.css';
 
@@ -175,9 +182,15 @@ export default Dashboard;
 //   const [employees, setEmployees] = useState([]);
 //   const [search, setSearch] = useState('');
 //   const [formData, setFormData] = useState({
-//     employeeId: '', fullName: '', email: '', phone: ''
+//     employeeId: '',
+//     fullName: '',
+//     email: '',
+//     phone: ''
 //   });
 //   const [editingId, setEditingId] = useState(null);
+
+//   const { token, logout } = useAuth();
+//   const navigate = useNavigate();
 
 //   useEffect(() => {
 //     fetchEmployees();
@@ -185,7 +198,9 @@ export default Dashboard;
 
 //   const fetchEmployees = async () => {
 //     try {
-//       const res = await api.get('/api/employees'); // uses token in header
+//       const res = await api.get('/api/employees', {
+//         headers: { Authorization: `Bearer ${token}` }
+//       });
 //       setEmployees(res.data);
 //     } catch (err) {
 //       console.error('Fetch error:', err);
@@ -193,15 +208,19 @@ export default Dashboard;
 //   };
 
 //   const handleChange = (e) => {
-//     setFormData({...formData, [e.target.name]: e.target.value });
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
 //   };
 
 //   const handleAddOrUpdate = async () => {
 //     try {
 //       if (editingId) {
-//         await api.put(`/api/employees/${editingId}`, formData);
+//         await api.put(`/api/employees/${editingId}`, formData, {
+//           headers: { Authorization: `Bearer ${token}` }
+//         });
 //       } else {
-//         await api.post('/api/employees', formData);
+//         await api.post('/api/employees', formData, {
+//           headers: { Authorization: `Bearer ${token}` }
+//         });
 //       }
 //       fetchEmployees();
 //       resetForm();
@@ -218,7 +237,9 @@ export default Dashboard;
 //   const handleDelete = async (id) => {
 //     if (!window.confirm('Are you sure you want to delete this employee?')) return;
 //     try {
-//       await api.delete(`/api/employees/${id}`);
+//       await api.delete(`/api/employees/${id}`, {
+//         headers: { Authorization: `Bearer ${token}` }
+//       });
 //       fetchEmployees();
 //     } catch (err) {
 //       console.error('Delete error:', err);
@@ -230,6 +251,11 @@ export default Dashboard;
 //     setEditingId(null);
 //   };
 
+//   const handleLogout = () => {
+//     logout();
+//     navigate('/login');
+//   };
+
 //   const filteredEmployees = employees.filter(emp =>
 //     emp.fullName.toLowerCase().includes(search.toLowerCase()) ||
 //     emp.email.toLowerCase().includes(search.toLowerCase())
@@ -237,14 +263,40 @@ export default Dashboard;
 
 //   return (
 //     <div className="dashboard-container">
-//       <button onClick={() => window.location.href = "/"} className="back-btn">← Return to Home</button>
-//       <h2>Employee Dashboard</h2>
+//       <div className="dashboard-header">
+//         <h2>Employee Dashboard</h2>
+//         <button onClick={handleLogout} className="logout-btn">Logout</button>
+//       </div>
 
 //       <div className="filters">
-//         <input type="text" name="employeeId" placeholder="Employee ID" value={formData.employeeId} onChange={handleChange} />
-//         <input type="text" name="fullName" placeholder="Full Name" value={formData.fullName} onChange={handleChange} />
-//         <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} />
-//         <input type="text" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} />
+//         <input
+//           type="text"
+//           name="employeeId"
+//           placeholder="Employee ID"
+//           value={formData.employeeId}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="text"
+//           name="fullName"
+//           placeholder="Full Name"
+//           value={formData.fullName}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="email"
+//           name="email"
+//           placeholder="Email"
+//           value={formData.email}
+//           onChange={handleChange}
+//         />
+//         <input
+//           type="text"
+//           name="phone"
+//           placeholder="Phone"
+//           value={formData.phone}
+//           onChange={handleChange}
+//         />
 //         <button className="add-btn" onClick={handleAddOrUpdate}>
 //           {editingId ? 'Update Employee' : 'Add Employee'}
 //         </button>
@@ -267,7 +319,7 @@ export default Dashboard;
 //           </tr>
 //         </thead>
 //         <tbody>
-//           {filteredEmployees.map(emp => (
+//           {filteredEmployees.map((emp) => (
 //             <tr key={emp._id}>
 //               <td>{emp.employeeId}</td>
 //               <td>{emp.fullName}</td>
@@ -286,3 +338,5 @@ export default Dashboard;
 // };
 
 // export default Dashboard;
+
+
